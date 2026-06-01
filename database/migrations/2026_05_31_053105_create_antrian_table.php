@@ -15,8 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('number');
-            $table->enum('status', ['waiting', 'called', 'late', 'completed'])->default('waiting');
-            $table->timestamps('created_at');
+            $table->enum('status', [
+                'waiting',
+                'called',
+                'late',
+                'completed'
+            ])->default('waiting');
+
+            $table->timestamps();
         });
     }
 

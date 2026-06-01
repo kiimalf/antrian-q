@@ -202,6 +202,10 @@
         transition: var(--transition);
     }
 
+    .main-panel.no-sidebar {
+        margin-left: 0;
+    }
+
     .content-wrapper {
         flex: 1;
         padding: 2rem;
@@ -398,6 +402,26 @@
 
     .table tr:hover td {
         background-color: var(--primary-light);
+    }
+    
+    /* Date & Time Widget */
+    .date-time {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        background-color: var(--primary-light);
+        padding: 0.4rem 0.85rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-color);
+    }
+
+    #current-time {
+        font-weight: 700;
+        color: var(--primary);
+        font-family: monospace;
     }
 
     /* Utilities */

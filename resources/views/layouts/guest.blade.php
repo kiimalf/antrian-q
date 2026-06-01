@@ -10,7 +10,7 @@
         <div class="container-scroller">
             @include('layouts.navbar')
             <div class="container-fluid page-body-wrapper">
-                <div class="main-panel">
+                <div class="main-panel no-sidebar">
                     <div class="content-wrapper">
                         @yield('content')
                     </div>
