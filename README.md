@@ -1,58 +1,108 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# antrian-q (AntrianQ)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+[![Laravel Framework](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![Server-Sent Events](https://img.shields.io/badge/SSE-Realtime-blue?style=for-the-badge)](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)
 
-## About Laravel
+**AntrianQ** (`antrian-q`) adalah sistem manajemen antrian digital real-time berbasis web yang dibangun menggunakan **Laravel** dan teknologi **Server-Sent Events (SSE)**. Aplikasi ini dirancang untuk memfasilitasi antrian loket secara instan dan sinkron antara halaman pengambilan tiket pengunjung, dashboard petugas, dan layar monitor ruang tunggu tanpa membebani server dengan *polling* HTTP berulang.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🛠️ Tech Stack & Library
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* **Back-end Framework:** Laravel (PHP)
+* **Real-time Engine:** Native Server-Sent Events (SSE) stream via `EventSource` API
+* **Database:** MySQL / MariaDB (bisa juga menggunakan SQLite)
+* **Front-end Styling:** Vanilla CSS (Desain kustom premium dengan skema warna HSL modern, efek glassmorphism, visual responsif, dan layout bersih)
+* **Icons:** Boxicons CSS library (`bx` icons)
+* **Notifikasi Suara:** Web Speech API (`window.speechSynthesis`) untuk panggilan suara otomatis dalam Bahasa Indonesia
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🚀 Fitur Utama & Modul
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Aplikasi ini terdiri dari tiga modul utama yang bekerja secara real-time:
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+### 1. 👥 Modul Pengantre (Guest/Pengunjung)
+* **Pengambilan Tiket Instan:** Pengunjung cukup memasukkan nama untuk mendapatkan nomor antrian secara otomatis.
+* **Halaman Tiket Dinamis:** Menampilkan status antrian saat ini (Menunggu, Sedang Dipanggil, Selesai, atau Terlewat) secara real-time tanpa perlu me-refresh halaman.
 
-## Agentic Development
+### 2. 🛡️ Dasbor & Manajemen Petugas (Admin/Loket)
+* **Panel Kontrol Panggilan:** Dashboard untuk memantau antrian yang sedang menunggu dan memprosesnya.
+* **Aksi Petugas:**
+  * **Panggil Berikutnya (Call Next):** Memanggil nomor antrian selanjutnya dari antrian terlama.
+  * **Panggil Ulang (Recall):** Mengirimkan ulang sinyal panggilan suara ke layar utama ruang tunggu.
+  * **Selesai (Complete):** Mengubah status layanan menjadi selesai dan menutup antrian tersebut.
+  * **Terlewat (Late):** Menandai antrian sebagai terlewat jika pengunjung tidak hadir di loket.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 3. 🖥️ Layar Monitor Utama (Board)
+* **Display Ruang Tunggu:** Tampilan monitor penuh yang atraktif untuk menunjukkan nomor antrian yang sedang dipanggil saat ini beserta nomor meja layanan/loket.
+* **Riwayat Panggilan (History):** Menampilkan daftar 3 nomor antrian terakhir yang dipanggil sebelumnya.
+* **Panggilan Suara Otomatis (Text-to-Speech):** Membunyikan suara panggilan saat admin menekan tombol "Call" atau "Recall" (contoh: *"Nomor antrian 5, harap menuju ke meja layanan"*).
+* **Indikator Koneksi SSE:** Badge status koneksi real-time (`Connected`, `Connecting`, atau `Disconnected`) di bagian atas layar untuk memantau konektivitas jaringan SSE.
 
-```bash
-composer require laravel/boost --dev
+---
 
-php artisan boost:install
-```
+## 📂 Dokumentasi Rute (Routes)
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+* **Beranda (Home):** `/` (pilihan akses cepat ke semua halaman)
+* **Pengunjung (Guest):**
+  * `/guest` - Form pengambilan tiket antrian
+  * `/guest/tiket/{id}` - Halaman detail status tiket real-time
+* **Petugas (Admin):**
+  * `/admin` atau `/admin/dashboard` - Panel kendali utama petugas
+  * `/admin/manajemen` - Manajemen data antrian
+* **Layar Display (Board):**
+  * `/board` - Monitor display utama ruang tunggu
+* **Event Stream:**
+  * `/sse/antrian` - Endpoint SSE stream yang memancarkan data antrian secara real-time ke semua klien
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## ⚙️ Cara Instalasi & Penggunaan
 
-## Code of Conduct
+1. **Clone Repository:**
+   ```bash
+   git clone https://github.com/username_anda/antrian-q.git
+   cd antrian-q
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+2. **Instal Dependensi Composer & NPM:**
+   ```bash
+   composer install
+   npm install
+   ```
 
-## Security Vulnerabilities
+3. **Konfigurasi Environment:**
+   Salin file `.env.example` menjadi `.env`:
+   ```bash
+   copy .env.example .env
+   ```
+   *Buka file `.env` dan konfigurasikan koneksi database MySQL Anda:*
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=antrian_q
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+4. **Buat Database:**
+   Buat database baru bernama `antrian_q` (atau sesuai konfigurasi `.env` Anda) melalui phpMyAdmin, MySQL CLI, atau DBMS pilihan Anda.
 
-## License
+5. **Generate App Key & Jalankan Migrasi:**
+   ```bash
+   php artisan key:generate
+   php artisan migrate
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+6. **Jalankan Aplikasi:**
+   ```bash
+   php artisan serve
+   ```
+   Akses aplikasi melalui browser pada alamat [http://localhost:8000](http://localhost:8000).
+
+---
+
+## 💡 Catatan Tambahan
+* **Izin Suara Browser (Autoplay):** Layar display utama (`/board`) membutuhkan izin suara pada browser Anda agar Text-to-Speech panggilan antrian dapat berbunyi otomatis tanpa terblokir sistem keamanan browser.
