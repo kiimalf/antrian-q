@@ -220,8 +220,34 @@
         
         let lastPlayedQueueId = null;
 
-        // Custom chime sound using Web Audio API
-        function playCallChime() {
+        // Play dingdong.mp3 audio chime, with Web Audio API synthesizer fallback
+        function playCallChime(callback) {
+            try {
+                const audio = new Audio('/audio/dingdong.mp3');
+                
+                // Execute callback (speech) once the chime audio ends
+                audio.onended = function() {
+                    if (callback) callback();
+                };
+                
+                audio.play().catch(e => {
+                    console.warn('Audio play blocked or failed, using synth fallback:', e);
+                    playWebAudioChime();
+                    if (callback) {
+                        setTimeout(callback, 800);
+                    }
+                });
+            } catch (e) {
+                console.warn('Error playing audio file, using synth fallback:', e);
+                playWebAudioChime();
+                if (callback) {
+                    setTimeout(callback, 800);
+                }
+            }
+        }
+
+        // Web Audio API synthesized chime fallback
+        function playWebAudioChime() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 
@@ -251,7 +277,7 @@
                     osc2.stop(audioCtx.currentTime + 0.6);
                 }, 140);
             } catch (e) {
-                console.warn('Audio Context error: ', e);
+                console.warn('Synth Audio Context error: ', e);
             }
         }
 
@@ -283,11 +309,10 @@
                     utterance.voice = idVoice;
                 }
                 
-                // Play chime first, then voice
-                playCallChime();
-                setTimeout(() => {
+                // Play chime first, then voice upon complete playback of the chime
+                playCallChime(() => {
                     window.speechSynthesis.speak(utterance);
-                }, 600);
+                });
             } else {
                 // fallback chime only
                 playCallChime();
@@ -313,11 +338,11 @@
                 announceQueueIndonesian(formattedNum, queueItem.name);
             }
             
-            // Add a deferred reload (e.g. after 6 seconds) to update history list cleanly
+            // Add a deferred reload (e.g. after 8.5 seconds) to update history list cleanly
             // once speaking is likely finished, preventing cutting off speech.
             setTimeout(() => {
                 window.location.reload();
-            }, 6000);
+            }, 8500);
         }
 
         // SSE Connection

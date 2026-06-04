@@ -429,7 +429,7 @@
         }
 
         // Start real-time SSE listener
-        // initSSE();
+        initSSE();
         
         // Polling Fallback (runs every 8 seconds to check status in case SSE is not supported/failing)
         setInterval(function() {

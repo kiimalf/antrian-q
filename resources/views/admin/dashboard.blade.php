@@ -419,7 +419,7 @@
         }
         
         // Start connection
-        // connectDashboardSSE();
+        connectDashboardSSE();
     });
 </script>
 @endsection
