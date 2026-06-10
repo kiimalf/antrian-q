@@ -395,7 +395,7 @@
             window.updateSSEStatus('connecting');
             
             // Connect to sse/antrian endpoint
-            sseSource = new EventSourceEventSource('/sse/antrian');
+            sseSource = new EventSource('/sse/antrian');
             
             sseSource.onopen = function() {
                 window.updateSSEStatus('connected');
