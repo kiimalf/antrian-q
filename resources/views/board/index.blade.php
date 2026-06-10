@@ -282,7 +282,7 @@
         }
 
         // Native Text-to-Speech Call announcer (Indonesian lang)
-        function announceQueueIndonesian(number, name) {
+        function announceQueueIndonesian(number, name, onFinished) {
             if ('speechSynthesis' in window) {
                 // Cancel any ongoing speaking to avoid overlapping
                 window.speechSynthesis.cancel();
@@ -302,6 +302,24 @@
                 utterance.rate = 0.85; // Natural flow rate
                 utterance.pitch = 1.0;
                 
+                // Prevent garbage collection bug in Chrome
+                window._currentUtterance = utterance;
+
+                if (onFinished) {
+                    let isFinished = false;
+                    const finishOnce = () => {
+                        if (!isFinished) {
+                            isFinished = true;
+                            onFinished();
+                        }
+                    };
+                    utterance.onend = finishOnce;
+                    utterance.onerror = finishOnce;
+                    
+                    // Fallback timeout in case speech API hangs (20 seconds max)
+                    setTimeout(finishOnce, 20000);
+                }
+                
                 // Find Indonesian voice if possible
                 const voices = window.speechSynthesis.getVoices();
                 const idVoice = voices.find(voice => voice.lang.includes('id') || voice.lang.includes('ID'));
@@ -315,7 +333,9 @@
                 });
             } else {
                 // fallback chime only
-                playCallChime();
+                playCallChime(() => {
+                    if (onFinished) setTimeout(onFinished, 2000);
+                });
             }
         }
 
@@ -332,17 +352,18 @@
             bellIconEl.style.display = 'block';
             boardCard.classList.add('calling-active');
             
+            // Function to perform reload
+            const performReload = () => {
+                window.location.reload();
+            };
+            
             // Announce voice if it's a new call or explicitly a recall
             if (isRecall || lastPlayedQueueId !== queueItem.id) {
                 lastPlayedQueueId = queueItem.id;
-                announceQueueIndonesian(formattedNum, queueItem.name);
+                announceQueueIndonesian(formattedNum, queueItem.name, performReload);
+            } else {
+                setTimeout(performReload, 3000);
             }
-            
-            // Add a deferred reload (e.g. after 8.5 seconds) to update history list cleanly
-            // once speaking is likely finished, preventing cutting off speech.
-            setTimeout(() => {
-                window.location.reload();
-            }, 8500);
         }
 
         // SSE Connection
